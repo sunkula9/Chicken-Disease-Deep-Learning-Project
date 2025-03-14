@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chicken Fecal Classifier</title>
+    <script>
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function(){
+                var output = document.getElementById('preview');
+                output.src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        async function predict() {
+            let fileInput = document.getElementById('imageInput');
+            if (fileInput.files.length === 0) {
+                alert("Please select an image.");
+                return;
+            }
+            
+            let file = fileInput.files[0];
+            let reader = new FileReader();
+            reader.onloadend = async function() {
+                let base64Image = reader.result.split(',')[1]; // Extract base64 part
+
+                try {
+                    let response = await fetch('/predict', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ image: base64Image })
+                    });
+
+                    let result = await response.json();
+                    console.log("API Response:", result);
+                    let prediction = result.prediction || "Unknown";
+                    document.getElementById('result').innerText = `Prediction: ${result.prediction}`;
+                } catch (error) {
+                    document.getElementById('result').innerText = "Error: Unable to process image.";
+                    console.error("Prediction error:", error);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    </script>
+</head>
+<body>
+    <h1>Chicken Fecal Classifier</h1>
+    <input type="file" id="imageInput" accept="image/*" onchange="previewImage(event)">
+    <br>
+    <img id="preview" src="#" alt="Image Preview" width="200">
+    <br>
+    <button onclick="predict()">Predict</button>
+    <br>
+    <p id="result"></p>
+</body>
+</html>
