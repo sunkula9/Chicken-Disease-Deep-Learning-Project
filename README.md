@@ -15,4 +15,4 @@
 
 
 ## Create ECR repo to store/save docker image
-   - save the URI: 241533150717.dkr.ecr.us-east-2.amazonaws.com/chicken
+   - save the URI:241533150717.dkr.ecr.us-east-2.amazonaws.com/chicken
